@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Быстрый старт. Размещение интерактивной карты на странице</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	</head>
+	
+	<style>	
+	.buttons 
+	{
+		display: flex;
+		flex-wrap: wrap;	
+		justify-content: space-between;
+		align-items: center;
+	}
+	</style>
+	<script type="text/javascript">
+	
+	function Register() {
+		var xhr = new XMLHttpRequest();
+		let email = document.getElementById('email').value;
+		let password = document.getElementById('password').value;
+		console.log(email);
+		console.log(password);
+		
+		let obj = {
+		'email' : email,
+		'password' : password
+		}
+		
+		xhr.open('POST', 'https://reqres.in/api/register', true);
+		xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		xhr.send(JSON.stringify(obj));
+
+		xhr.onreadystatechange = function() 
+		{
+			if (this.readyState != 4) return;
+
+			// по окончании запроса доступны:
+			// status, statusText
+			// responseText, responseXML (при content-type: text/xml)
+
+			if (this.status != 200) {
+				// обработать ошибку
+				console.log( 'ошибка: ' + (this.status ? this.statusText : 'запрос не удался') );
+				
+				alert( 'ошибка: ' + (this.status ? this.statusText : 'запрос не удался') );
+				return;
+			}
+			var data = JSON.parse(xhr.responseText);
+			console.log( 'id: ' + data.id);
+			console.log( 'token: ' + data.token);
+			window.location.href = 'index.html';
+			
+			// получить результат из this.responseText или this.responseXML
+		}	
+	}
+	</script>
+	<form style = "max-width : 25%" id = "someForm">
+		<fieldset>
+			<legend>Данные для регистрации</legend>
+			<p><label for="email">E-mail</label><div><input type="email" id="email" style="width: 100%"></div></p>
+			<p><label for="password">Пароль</label><div><input type="password" id="password" style="width: 100%"></div></p>
+		</fieldset>
+		
+		<p class="buttons"><input type="button" onclick="window.location.href = 'index.html';" value="Отмена"><input type="button" onclick="Register();" value="Отправить"></p>
+	</form>
+
+</html>

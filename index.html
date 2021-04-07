@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Быстрый старт. Размещение интерактивной карты на странице</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	</head>
+	<style>
+	
+	
+	.buttons 
+	{
+		display: flex;
+		flex-wrap: wrap;	
+		justify-content: space-between;
+		align-items: center;
+	}
+	
+	.flex 
+	{
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+	}
+	
+	.flex > div 
+	{
+		margin: 0 1rem 2rem 1rem;
+		text-align: center;
+	}
+	</style>
+
+	
+	<body>
+		<div class="buttons">
+			<button id="GetListUsers" class="button" onclick="GetList()">Получить список пользователей</button>
+			<div>
+			<button id="GetListUsers" class="button" onclick="window.location.href = 'login.html';">Войти</button>
+			<button id="GetListUsers" class="button" onclick="window.location.href = 'register.html';">Зарегистрироваться</button>
+			</div>
+		</div>
+			<div id="UserList" class="flex"></div>
+		
+	</body>
+<script type="text/javascript">
+	
+	function GetList() {
+		let xhr = new XMLHttpRequest();
+
+		xhr.open('GET', 'https://reqres.in/api/users?page=1', true);
+
+		xhr.send();
+
+		xhr.onreadystatechange = function() 
+		{
+			if (this.readyState != 4) return;
+
+			// по окончании запроса доступны:
+			// status, statusText
+			// responseText, responseXML (при content-type: text/xml)
+
+			if (this.status != 200) {
+				// обработать ошибку
+				alert( 'ошибка: ' + (this.status ? this.statusText : 'запрос не удался') );
+				return;
+			}
+			
+			let result = JSON.parse(this.responseText);
+			var alldata = [];
+			pageCount = result.total_pages;
+			
+			for (let i = 0; i < pageCount; i++) {
+			
+				let xhr = new XMLHttpRequest();
+				
+				url = 'https://reqres.in/api/users?page='+(i+1);
+				
+				xhr.open('GET', url, true);
+
+				xhr.send();
+
+				xhr.onreadystatechange = function() 
+				{
+					if (this.readyState != 4) 
+					return;
+
+					if (this.status != 200) {
+
+						alert( 'ошибка: ' + (this.status ? this.statusText : 'запрос не удался') );
+
+						return;
+					}
+					
+					let result = JSON.parse(this.responseText);
+					var selector = document.querySelector('#UserList');
+			
+					result.data.forEach(element => 
+					{
+						alldata.push(element);				
+						var block = document.createElement('div');
+						var name = document.createElement('p');
+						var email = document.createElement('p');
+						var image = document.createElement('img');
+						name.innerHTML = `<strong>${element.first_name}</strong>`; 
+						email.innerHTML = element.email; 
+						image.src = element.avatar;
+						
+						block.appendChild(name);
+						block.appendChild(email);
+						block.appendChild(image);
+						selector.appendChild(block);
+				});
+				}
+			}
+			
+			// получить результат из this.responseText или this.responseXML
+		}	
+	}
+	</script>	
+
+</html>
